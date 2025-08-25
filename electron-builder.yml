@@ -1,0 +1,62 @@
+appId: com.dami.account-switch-demo
+productName: 账号切换演示
+icon: build/icon256x256.ico
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!**/node_modules/**/*.map'
+asarUnpack:
+  - resources/**
+  - node_modules/regedit/**
+win:
+  executableName: account-switch-demo
+  target:
+    - target: nsis # 生成安装包
+    - target: portable # 生成免安装单文件
+  artifactName: ${productName}-${version}-${arch}-setup.${ext}
+  requestedExecutionLevel: highestAvailable # 提升权限
+nsis:
+  oneClick: false # 禁用一键安装，显示向导
+  perMachine: false # 禁用系统级安装，显示用户级安装
+  allowElevation: true # 允许提升权限
+  allowToChangeInstallationDirectory: true # 允许更改安装目录
+  createDesktopShortcut: true # 创建桌面快捷方式
+  createStartMenuShortcut: true # 创建开始菜单快捷方式
+  artifactName: ${productName}-${version}-${arch}-setup.${ext}
+  shortcutName: ${productName}
+  runAfterFinish: true # 安装完成后运行应用
+  guid: 'com.dami.account-switch-demo' # 应用唯一标识
+portable:
+  artifactName: ${productName}-${version}-${arch}-portable.${ext}
+mac:
+  entitlementsInherit: build/entitlements.mac.plist
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  extendInfo:
+    - NSCameraUsageDescription: Application requests access to the device's camera.
+    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
+    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
+    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+  notarize: false
+  target:
+    - target: dmg
+    - target: zip
+linux:
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  target:
+    - AppImage
+  maintainer: electronjs.org
+  category: Utility
+appImage:
+  artifactName: ${name}-${version}.${ext}
+npmRebuild: false
+publish:
+  provider: generic
+  url: https://example.com/auto-updates
+electronDownload:
+  mirror: https://npmmirror.com/mirrors/electron/

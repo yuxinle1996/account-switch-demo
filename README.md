@@ -417,7 +417,7 @@ console.log(openUrl)
 
 vscode://augment.vscode-augment/auth/result?code=\_a7ca33cd7a2f216f3fceffb2afcabf2d&state=70506769-9aa0-42bc-be77-397eed2a1df2&tenant_url=https%3A%2F%2Fd9.api.augmentcode.com%2F
 
-<img src="C:\Users\dami\AppData\Roaming\Typora\typora-user-images\image-20250825160513863.png" alt="image-20250825160513863" style="zoom: 50%;" />
+<img src=".\image-20250825160513863.png" alt="image-20250825160513863" style="zoom: 50%;" />
 
 3. **使用 `code` 和 `codeVerifier` 生成access_token**
 

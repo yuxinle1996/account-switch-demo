@@ -555,7 +555,7 @@ console.log(res)
 
 ### 3.1 重置机器
 
-路径: `C:\Users\dami\AppData\Roaming\Cursor\User\globalStorage\storage.json`
+路径: `C:\Users\dami\AppData\Roaming\Windsurf\User\globalStorage\storage.json`
 
 字段:
 

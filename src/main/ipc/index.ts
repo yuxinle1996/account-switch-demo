@@ -3,10 +3,10 @@ import { arch } from 'node:os'
 import { isWin } from '@main/constant'
 import secrets from '@main/utils/secrets'
 import { IpcChannel } from '@shared/IpcChannel'
-import { IDE } from '@types'
+import { Config, IDE } from '@types'
 import { app, ipcMain } from 'electron'
 
-import { generateLoginUrl, verifyCode } from './handle'
+import { generateLoginUrl, getConfig, setConfig, verifyCode } from './handle'
 import {
   getMachineIds,
   getRegistryMachineGuid,
@@ -65,6 +65,16 @@ export function registerIPCHandlers() {
   ipcMain.handle(IpcChannel.App_Reload, () => {
     app.relaunch()
     app.exit(0)
+  })
+
+  // 获取配置
+  ipcMain.handle(IpcChannel.App_GetConfig, () => {
+    return getConfig()
+  })
+
+  // 设置配置
+  ipcMain.handle(IpcChannel.App_SetConfig, (_, config: Config) => {
+    return setConfig(config)
   })
 
   // secrets-加密

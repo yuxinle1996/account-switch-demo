@@ -1,6 +1,6 @@
 import { electronAPI } from '@electron-toolkit/preload'
 import { IpcChannel } from '@shared/IpcChannel'
-import { AppInfo, IDE, IpcResponse, MachineIds } from '@types'
+import { AppInfo, Config, IDE, IpcResponse, MachineIds } from '@types'
 import { contextBridge, ipcRenderer } from 'electron'
 
 // Custom APIs for renderer
@@ -10,6 +10,12 @@ const api = {
 
   /** 重启应用 */
   reload: () => ipcRenderer.invoke(IpcChannel.App_Reload),
+
+  /** 获取配置 */
+  getConfig: () => ipcRenderer.invoke(IpcChannel.App_GetConfig) as Promise<IpcResponse<Config>>,
+  /** 设置配置 */
+  setConfig: (config: Config) =>
+    ipcRenderer.invoke(IpcChannel.App_SetConfig, config) as Promise<IpcResponse<Config>>,
 
   secrets: {
     /** secrets-加密 */
@@ -28,23 +34,19 @@ const api = {
   machine: {
     /** 获取机器ids */
     getMachineIds: (ide: IDE) =>
-      ipcRenderer.invoke(IpcChannel.App_GetMachineIds, ide) as Promise<
-        IpcResponse<MachineIds | null>
-      >,
+      ipcRenderer.invoke(IpcChannel.App_GetMachineIds, ide) as Promise<IpcResponse<MachineIds>>,
     /** 设置随机机器ids */
     setRandomMachineIds: (ide: IDE) =>
       ipcRenderer.invoke(IpcChannel.App_SetRandomMachineIds, ide) as Promise<
-        IpcResponse<MachineIds | null>
+        IpcResponse<MachineIds>
       >,
     /** 获取注册表guid */
     getRegistryMachineGuid: () =>
-      ipcRenderer.invoke(IpcChannel.App_GetRegistryMachineGuid) as Promise<
-        IpcResponse<string | null>
-      >,
+      ipcRenderer.invoke(IpcChannel.App_GetRegistryMachineGuid) as Promise<IpcResponse<string>>,
     /** 设置随机注册表guid */
     setRandomRegistryMachineGuid: () =>
       ipcRenderer.invoke(IpcChannel.App_SetRandomRegistryMachineGuid) as Promise<
-        IpcResponse<string | null>
+        IpcResponse<string>
       >
   }
 }

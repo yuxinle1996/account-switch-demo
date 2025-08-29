@@ -6,12 +6,14 @@ import { createRoot } from 'react-dom/client'
 
 import App from './App'
 
-createRoot(document.getElementById('root')!).render(
+const root = createRoot(document.getElementById('root')!)
+
+root.render(
   <StrictMode>
     <HeroUIProvider>
       <App />
       <ToastProvider
-        placement="top-center"
+        placement="bottom-center"
         toastOffset={10}
         toastProps={{
           timeout: 3000

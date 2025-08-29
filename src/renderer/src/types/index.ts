@@ -1,7 +1,8 @@
 /** 开发环境 */
 export enum IDE {
   VSCode = 'Code',
-  Cursor = 'Cursor'
+  Cursor = 'Cursor',
+  Windsurf = 'Windsurf'
 }
 
 /** ipc响应类型 */
@@ -47,4 +48,16 @@ export interface MachineIds {
   macMachineId: string
   devDeviceId: string
   sqmId: string
+}
+
+export enum DecryptType {
+  /** 用户数据路径 */
+  UserDataPath = 'userDataPath',
+  /** 秘钥文件 */
+  KeyFile = 'keyFile'
+}
+
+export interface Config {
+  type?: DecryptType
+  editor?: IDE
 }

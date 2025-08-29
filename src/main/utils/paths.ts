@@ -41,6 +41,13 @@ export function setUserDataPath(appName?: typeof APP_NAME | typeof APP_NAME_DEV 
 }
 
 /**
+ * 获取配置文件路径
+ */
+export function getConfigPath() {
+  return path.join(getUserDataPath(), 'config.json')
+}
+
+/**
  * 获取IDE storage路径
  * @param ide 指定IDE
  */

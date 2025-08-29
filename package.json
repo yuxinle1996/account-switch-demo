@@ -1,7 +1,7 @@
 {
   "name": "account-switch-demo",
   "version": "1.0.0",
-  "description": "账号切换演示",
+  "description": "加密/解密演示",
   "main": "./out/main/index.js",
   "author": "dami",
   "homepage": "https://github.com/yuxinle1996",

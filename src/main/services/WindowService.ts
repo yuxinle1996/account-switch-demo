@@ -35,8 +35,10 @@ export class WindowService {
       return this.mainWindow
     }
     this.mainWindow = new BrowserWindow({
-      width: 800,
+      width: 500,
       height: 600,
+      minWidth: 380,
+      minHeight: 400,
       show: false,
       transparent: isMac,
       vibrancy: 'sidebar',
@@ -62,9 +64,9 @@ export class WindowService {
     // 加载应用内容
     this.loadMainWindowContent()
 
-    if (is.dev) {
-      this.mainWindow.webContents.openDevTools({ mode: 'detach' })
-    }
+    // if (is.dev) {
+    //   this.mainWindow.webContents.openDevTools({ mode: 'detach' })
+    // }
 
     return this.mainWindow
   }

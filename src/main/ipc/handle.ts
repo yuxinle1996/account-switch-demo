@@ -1,11 +1,44 @@
 import { getHash, toUrlSafeBase64 } from '@main/utils'
+import { getConfigPath, getUserDataPath, readJsonFile, writeJsonFile } from '@main/utils/paths'
 import { failure, success } from '@main/utils/response'
-import { IDE } from '@types'
+import { Config, DecryptType, IDE } from '@types'
 import axios from 'axios'
 import { randomBytes, randomUUID } from 'crypto'
 import dayjs from 'dayjs'
+import fs from 'fs-extra'
+import path from 'path'
 
 let oauthState: any = {}
+
+/** 读取配置 */
+export function getConfig() {
+  try {
+    const configPath = getConfigPath()
+    const config = readJsonFile(configPath)
+    return success(config)
+  } catch (error) {
+    return failure(error.message)
+  }
+}
+
+/** 设置配置 */
+export function setConfig(config: Config) {
+  try {
+    const configPath = getConfigPath()
+    const currentConfig: Config = readJsonFile(configPath)
+    const newConfig = { ...currentConfig, ...config }
+    writeJsonFile(configPath, newConfig)
+    if (newConfig.type === DecryptType.KeyFile) {
+      const ideKeyFilePath = path.join(getUserDataPath(newConfig.editor), 'Local State')
+      // 将目标ide的key文件复制到自身应用用户数据路径
+      const myKeyFilePath = path.join(getUserDataPath(), 'Local State')
+      fs.copyFileSync(ideKeyFilePath, myKeyFilePath)
+    }
+    return success(newConfig)
+  } catch (error) {
+    return failure(error.message)
+  }
+}
 
 /** 生成登录链接 */
 export function generateLoginUrl(ide: IDE) {

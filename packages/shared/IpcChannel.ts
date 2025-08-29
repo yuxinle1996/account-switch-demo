@@ -3,6 +3,10 @@ export enum IpcChannel {
   App_Info = 'app:info',
   /** ipc-重启应用 */
   App_Reload = 'app:reload',
+  /** ipc-获取配置 */
+  App_GetConfig = 'app:get-config',
+  /** ipc-设置配置 */
+  App_SetConfig = 'app:set-config',
   /** ipc-secrets-加密 */
   Secrets_Encrypt = 'secrets:encrypt',
   /** ipc-secrets-解密 */

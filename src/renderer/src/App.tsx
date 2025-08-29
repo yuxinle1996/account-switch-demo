@@ -1,35 +1,181 @@
-import { Button } from '@heroui/react'
-import { useEffect } from 'react'
+import { addToast, Button, closeAll, Radio, RadioGroup, Tab, Tabs, Textarea } from '@heroui/react'
+import { useEffect, useState } from 'react'
 
-function App(): React.JSX.Element {
+import { Config, DecryptType, IDE } from './types'
+
+const editorList = [
+  {
+    label: 'VSCode',
+    value: IDE.VSCode
+  },
+  {
+    label: 'Cursor',
+    value: IDE.Cursor
+  },
+  {
+    label: 'Windsurf',
+    value: IDE.Windsurf
+  }
+]
+
+function App() {
+  const [init, setInit] = useState(false)
+  const [data, setData] = useState('')
+  const [result, setResult] = useState('')
+  const [config, setConfig] = useState<Config>({})
+
+  async function getConfig() {
+    try {
+      const res = await window.api.getConfig()
+      if (!res.success) {
+        throw new Error(res.message)
+      }
+      setConfig(res.data)
+    } catch (error) {
+      addToast({
+        title: '获取配置失败',
+        description: error.message?.replace('Error invoking remote method ', '') || error,
+        color: 'danger'
+      })
+    } finally {
+      setInit(true)
+    }
+  }
+
   useEffect(() => {
-    document.title = '账号切换演示'
+    document.title = '加密/解密演示'
+    getConfig()
   }, [])
 
   async function encrypt() {
-    const data = {
-      accessToken: 'f51de68ebb97515c3e04f655da293325e787d14ecf20d9cf1fd78e522acc5f2e',
-      tenantURL: 'https://d9.api.augmentcode.com',
-      scopes: ['email']
+    try {
+      const res = await window.api.secrets.encrypt(data)
+      setResult(res)
+    } catch (error) {
+      addToast({
+        title: '加密失败',
+        description: error.message.replace('Error invoking remote method ', ''),
+        color: 'danger'
+      })
     }
-    const res = await window.api.secrets.encrypt(data)
-    console.log('加密res', res)
   }
   async function decrypt() {
-    const str = `{"type":"Buffer","data":[118,49,48,157,199,131,163,241,93,98,109,34,9,185,105,207,86,141,168,124,201,141,10,4,56,214,240,4,181,135,83,160,204,129,213,251,54,181,133,42,94,14,20,16,16,116,160,92,252,238,60,30,50,159,130,248,199,242,112,114,253,206,102,78,167,140,31,199,66,103,99,33,111,80,103,153,192,228,194,16,171,58,237,202,230,58,37,43,51,228,252,71,228,174,236,76,32,189,112,162,111,119,17,15,15,138,67,95,18,65,207,232,91,7,145,31,29,4,142,119,83,69,3,195,207,71,152,175,167,24,113,17,11,25,63,49,29,38,217,226,193,32,169,198,111,68,36,90,47,173,51,48,93,206,18,13,205,47,12,157,145,70,49,176,203,161,151,134,91,125,125,102,197,144,220,221,143]}`
-    const obj = JSON.parse(str)
-    const res = await window.api.secrets.decrypt(obj.data)
-    console.log('解密res', res)
+    try {
+      const obj = JSON.parse(data)
+      const res = await window.api.secrets.decrypt(obj.data)
+      setResult(res)
+    } catch (error) {
+      addToast({
+        title: '解密失败',
+        description: error.message.replace('Error invoking remote method ', ''),
+        color: 'danger'
+      })
+    }
+  }
+
+  async function setConfigAndNotify(data: Config) {
+    if (!init) return
+    try {
+      const res = await window.api.setConfig(data)
+      if (!res.success) {
+        throw new Error(res.message)
+      }
+      setConfig(res.data)
+      closeAll()
+      addToast({
+        title: '配置更新',
+        description: '需要重启应用才能生效',
+        color: 'primary',
+        timeout: 3000,
+        shouldShowTimeoutProgress: true,
+        hideIcon: true,
+        endContent: (
+          <Button color="primary" variant="flat" size="sm" onPress={window.api.reload}>
+            立刻重启
+          </Button>
+        )
+      })
+    } catch (error) {
+      addToast({
+        title: '配置更新失败',
+        description: error.message.replace('Error invoking remote method ', ''),
+        color: 'danger'
+      })
+    }
   }
 
   return (
-    <div className="h-screen">
-      <Button color="primary" onPress={encrypt}>
-        加密
-      </Button>
-      <Button color="primary" onPress={decrypt}>
-        解密
-      </Button>
+    <div className="flex h-screen flex-col">
+      <div className="relative flex h-screen flex-1 flex-col">
+        <div className="flex flex-col gap-2 p-2">
+          <div className="flex items-center gap-2">
+            <Button color="primary" size="sm" onPress={encrypt}>
+              加密
+            </Button>
+            <Button color="secondary" size="sm" onPress={decrypt}>
+              解密
+            </Button>
+            <Button
+              color="danger"
+              size="sm"
+              variant="ghost"
+              onPress={() => {
+                setData('')
+                setResult('')
+              }}
+            >
+              清空
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <RadioGroup
+              orientation="horizontal"
+              size="sm"
+              value={config.type}
+              onValueChange={(value) => setConfigAndNotify({ type: value as DecryptType })}
+            >
+              <Radio value={DecryptType.UserDataPath}>用户数据路径</Radio>
+              <Radio value={DecryptType.KeyFile}>秘钥文件</Radio>
+            </RadioGroup>
+            <Tabs
+              size="sm"
+              selectedKey={config.editor}
+              onSelectionChange={(value) => setConfigAndNotify({ editor: value as IDE })}
+            >
+              {editorList.map((item) => (
+                <Tab key={item.value} title={item.label} value={item.value} />
+              ))}
+            </Tabs>
+          </div>
+        </div>
+        <Textarea
+          classNames={{
+            base: 'flex-1',
+            inputWrapper: 'rounded-none flex-1',
+            input: 'h-full'
+          }}
+          variant="bordered"
+          disableAutosize
+          placeholder="请输入要加密或解密的内容"
+          value={data}
+          onValueChange={setData}
+        />
+      </div>
+      <div className="h-screen flex-1">
+        <Textarea
+          classNames={{
+            base: 'h-full',
+            inputWrapper: 'rounded-none border-0  flex-1',
+            input: 'h-full'
+          }}
+          label="结果"
+          readOnly
+          variant="faded"
+          disableAutosize
+          value={result}
+          onValueChange={setResult}
+        />
+      </div>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 appId: com.dami.account-switch-demo
-productName: 账号切换演示
+productName: 加密/解密演示
 icon: build/icon256x256.ico
 directories:
   buildResources: build
@@ -20,7 +20,7 @@ win:
     - target: nsis # 生成安装包
     - target: portable # 生成免安装单文件
   artifactName: ${productName}-${version}-${arch}-setup.${ext}
-  requestedExecutionLevel: highestAvailable # 提升权限
+  # requestedExecutionLevel: highestAvailable # 提升权限
 nsis:
   oneClick: false # 禁用一键安装，显示向导
   perMachine: false # 禁用系统级安装，显示用户级安装

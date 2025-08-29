@@ -12,7 +12,7 @@ const encrypt = (data: any) => {
     return JSON.stringify(buffer)
   } catch (error: any) {
     console.error('encrypt error:', error.message)
-    return null
+    throw error
   }
 }
 
@@ -27,7 +27,7 @@ const decrypt = (data: number[]): string | null => {
     return result
   } catch (error: any) {
     console.error('decrypt error:', error.message)
-    return null
+    throw error
   }
 }
 
